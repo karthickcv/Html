@@ -4,9 +4,7 @@ pipeline{
            
 
       stage('Build'){
-            agent{
-                    dockerfile true
-                }
+   
             steps{
                 sh'''
                     docker build -t karthickcv/html_build:v1 . 
