@@ -9,7 +9,7 @@ pipeline{
                 }
             steps{
                 sh'''
-                    docker build -t karthickcv/html_build:v1 Dockerfile 
+                    docker build -t karthickcv/html_build:v1 . 
                 '''
             }
 
