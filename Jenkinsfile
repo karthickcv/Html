@@ -1,39 +1,30 @@
 pipeline {
-  environment {
-    registry = "karthickcv/own-deployment"
-    registryCredential = 'dockerhub'
-    dockerImage = ''
-  }
-  agent any
-  stages {
+  agent { label 'docker' }
+  
+      
+    stages {
     stage('Cloning Git') {
       steps {
         git 'https://github.com/karthickcv/Html.git'
       }
     }
-    stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
-        }
+
+      
+    stage('Build') {
+      steps {
+        sh 'docker build -t karthickcv/own-deployment .'
+        sh 'docker build -t karthickcv/own-deployment .'
       }
     }
-
-   
-
-
-    stage('Deploy Image') {
-      steps{
-        script {
-          docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-          }
-        }
+    stage('Publish') {
+      when {
+        branch 'master'
       }
-    }
-    stage('Remove Unused docker image') {
-      steps{
-        sh "docker rmi $registry:$BUILD_NUMBER"
+      steps {
+        withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
+          sh 'docker push karthickcv/own-deployment'
+         
+        }
       }
     }
   }
