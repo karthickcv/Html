@@ -1,25 +1,27 @@
 pipeline{
     agent any
     stages{
-        stage('Build'){
-            steps{
-                agent{
+           
+
+      stage('Build'){
+            agent{
                     dockerfile true
                 }
-
-                script{
-                    docker build -t karthickcv/html_build:v1 Dockerfile 
-                }
+            steps{
+                sh'''
+                    ./docker build -t karthickcv/html_build:v1 Dockerfile 
+                '''
             }
 
         }
 
         stage('Deploy'){
             steps{
-                script{
-                    docker push karthickcv/html_build:v1 
+                sh'''
+                    ./docker push karthickcv/html_build:v1 
+                    '''
                 }
             }
         }
-    }
+    
 }
