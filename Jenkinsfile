@@ -9,7 +9,7 @@ pipeline{
                 }
             steps{
                 sh'''
-                    ./docker build -t karthickcv/html_build:v1 Dockerfile 
+                    docker build -t karthickcv/html_build:v1 Dockerfile 
                 '''
             }
 
@@ -18,7 +18,7 @@ pipeline{
         stage('Deploy'){
             steps{
                 sh'''
-                    ./docker push karthickcv/html_build:v1 
+                    docker push karthickcv/html_build:v1 
                     '''
                 }
             }
