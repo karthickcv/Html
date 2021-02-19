@@ -1,48 +1,40 @@
-pipeline{
-
-   environment{
-      
-     registry = "karthickcv/own-deployment"
-     registryCredential = 'dockerhub'
-     dockerImage = ''
-   } 
-
-    agent any
-    stages{
-          
-
-      stage('Cloning Git Repo'){
-   
-            steps{
-                
-                   git  'https://github.com/karthickcv/Html.git'
-
-                
-               
-            }
-
+pipeline {
+  environment {
+    registry = "karthickcv/own-deployment"
+    registryCredential = 'dockerhub'
+    dockerImage = ''
+  }
+  agent any
+  stages {
+    stage('Cloning Git') {
+      steps {
+        git 'https://github.com/karthickcv/Html.git'
+      }
+    }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
         }
-                
-      
-        stage('Build'){
-            steps{	
-                script{
-                   dockerImage =  docker.build registry + ":$BUILD_NUMBER"  
-                   
-                }
-            }
-       }
-        stage('Deploy'){
-          
-	    steps {
+      }
+    }
 
-                 script {
-                  docker.withRegistry ('', registryCredential ) {
-                   dockerImage.push();
-                    }		
-                  }
-             }          
    
+
+
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+          }
         }
-   } 
- }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $registry:$BUILD_NUMBER"
+      }
+    }
+  }
+}
