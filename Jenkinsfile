@@ -1,25 +1,48 @@
 pipeline{
+
+   environment{
+      
+     registry = "karthickcv/own-deployment"
+     registryCredential = 'dockerhub'
+     dockerImage = ''
+   } 
+
     agent any
     stages{
-           
+          
 
-      stage('Build'){
+      stage('Cloning Git Repo'){
    
             steps{
-                sh'''
-                    docker build -t karthickcv/html_build:v1 . 
-                '''
+                
+                   git  'https://github.com/karthickcv/Html.git'
+
+                
+               
             }
 
         }
-
-        stage('Deploy'){
+                
+      
+        stage('Build'){
             steps{
                 sh'''
-                    docker push karthickcv/html_build:v1 
-                    '''
+                   dockerImage =  docker.build registry + ":$BUILD_NUMBER"  
+                   '''
                 }
             }
+
+        stage('Deploy'){
+           
+	    steps {
+
+                 sh '''
+                  docker.withRegistry ('',registryCredential) {
+                   docker.push();
+                    }		
+                  '''
+             }          
+   
         }
-    
-}
+   } 
+ }
